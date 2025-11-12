@@ -1,0 +1,80 @@
+---
+import { Image } from "astro:assets";
+import siteLogo from "../images/site-logo.png";
+
+const menuItems = [
+  {
+    title: "บล็อก",
+    href: "/blog",
+  },
+];
+
+const menuButton = {
+  title: "Source Code",
+  href: "https://github.com/Duckrr/astro-notion",
+};
+---
+
+<header class="bg-white sticky top-0 z-50">
+  <nav
+    class="header-nav max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6"
+  >
+    <a
+      href="/"
+      id="site-logo"
+      class="logo-link w-24 transition-all ease-in-out"
+    >
+      <Image
+        src={siteLogo}
+        alt="Site Logo"
+        class="site-logo w-full"
+        format="avif"
+        quality={"mid"}
+        loading={"eager"}
+        decoding={"async"}
+        fetchpriority={"high"}
+      />
+    </a>
+    
+    <!-- Menu Items -->
+    <div class="hidden md:flex items-center gap-8">
+      {menuItems.map((item) => (
+        <a
+          href={item.href}
+          class="text-gray-700 hover:text-primary transition-colors font-medium"
+        >
+          {item.title}
+        </a>
+      ))}
+    </div>
+  </nav>
+</header>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    const logoWrap = document.getElementById("site-logo");
+    if (!logoWrap) return;
+
+    const large = "w-24";
+    const small = "w-16";
+
+    const updateWidthClass = () => {
+      if (window.scrollY > 0) {
+        if (logoWrap.classList.contains(large)) {
+          logoWrap.classList.replace(large, small);
+        } else {
+          logoWrap.classList.add(small);
+        }
+      } else {
+        if (logoWrap.classList.contains(small)) {
+          logoWrap.classList.replace(small, large);
+        } else {
+          logoWrap.classList.add(large);
+        }
+      }
+    };
+
+    updateWidthClass();
+    window.addEventListener("scroll", updateWidthClass, { passive: true });
+  });
+</script>
