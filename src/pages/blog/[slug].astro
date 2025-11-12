@@ -1,0 +1,131 @@
+---
+import { Image,getImage } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+
+// นำเข้า Type Definition สำหรับ GetStaticPaths จาก Astro
+import type { GetStaticPaths } from "astro";
+// นำเข้าฟังก์ชันสำหรับดึงข้อมูลโพสต์ทั้งหมดจาก Notion
+import { getAllPosts } from "../../lib/notion";
+// นำเข้าฟังก์ชันสำหรับแปลงบล็อกของ Notion เป็น HTML
+import { renderBlocksToHtml } from "../../lib/renderNotionBlocks";
+// นำเข้าฟังก์ชันสำหรับดึงบล็อกทั้งหมดแบบเจาะลึก (รวมบล็อกลูก)
+import { getBlocksDeep } from "../../lib/renderNotionChildBlocks";
+
+/**
+ * getStaticPaths คือฟังก์ชันพิเศษของ Astro สำหรับการสร้างหน้าเว็บแบบ Static (SSG)
+ * ฟังก์ชันนี้จะถูกเรียกตอน build time เพื่อสร้างหน้าเว็บสำหรับแต่ละบทความ
+ */
+export const getStaticPaths: GetStaticPaths = async () => {
+  // 1. ดึงข้อมูลบทความทั้งหมดจาก Notion
+  const posts = await getAllPosts();
+
+  const paths = [];
+  // 2. วนลูปแต่ละบทความเพื่อเตรียมข้อมูลสำหรับสร้างหน้าเว็บ
+  for (const post of posts) {
+    // ถ้าโพสต์ไม่มี slug (ชื่อที่ใช้ใน URL) ให้ข้ามไป
+    if (!post.slug) continue;
+
+    // 3. ดึงเนื้อหา (บล็อก) ทั้งหมดของบทความนี้แบบเจาะลึก
+    const blocks = await getBlocksDeep(post.id);
+    // 4. แปลงเนื้อหาจากบล็อกเป็น HTML string
+    const contentHtml = renderBlocksToHtml(blocks);
+
+    // 5. สร้าง object ที่ Astro ต้องการสำหรับแต่ละหน้า
+    paths.push({
+      params: { slug: post.slug }, // กำหนด URL ของหน้า เช่น /blog/my-first-post
+      props: {
+        // ส่งข้อมูลเหล่านี้ไปยัง template ของหน้าเว็บ
+        id: post.id,
+        title: post.title,
+        description: post.description,
+        tags: post.tags,
+        created: post.created,
+        contentHtml, // เนื้อหาที่แปลงเป็น HTML แล้ว
+        cover: post.cover,
+      },
+    });
+  }
+
+  // 6. คืนค่า paths ทั้งหมดเพื่อให้ Astro สร้างหน้าเว็บตามข้อมูลนี้
+  return paths;
+};
+
+// ดึงข้อมูล (props) ที่ส่งมาจาก getStaticPaths
+// เพื่อนำไปใช้ใน template HTML ด้านล่าง
+const { title, description, tags, created, contentHtml, cover } =
+  Astro.props as {
+    title: string;
+    description?: string;
+    tags: string[];
+    created: string;
+    contentHtml: string;
+    cover?: string;
+  };
+
+const coverImage = await getImage({
+  src: cover as string,
+  width: 1200,
+  height: 600,
+  format: "avif",
+  quality: 80,
+});  
+---
+
+<Layout title={title} description={description || ""} image={coverImage.src}>
+  <article class="max-w-5xl mx-auto space-y-4">
+    <figure class="shadow-box rounded-b-2xl overflow-hidden">
+      {
+        cover && (
+          <Image
+            src={cover}
+            width={1200}
+            height={600}
+            alt={title}
+            class="w-full aspect-video object-cover"
+            loading={"eager"}
+            decoding={"async"}
+            fetchpriority={"high"}
+          />
+        )
+      }
+    </figure>
+    <div class="text-center my-8">
+      <time>
+        {
+          new Date(created).toLocaleString("th-TH", {
+            dateStyle: "long",
+          })
+        }
+      </time>
+      <h1 class="mt-2 text-2xl md:text-3xl">{title}</h1>
+      <div class="mt-2 space-x-2 flex items-center justify-center">
+        <span>by</span><img
+          src=""
+          alt=""
+          class=""
+        />
+        <span>Ben-Benjamin</span>
+      </div>
+    </div>
+
+    <hr class="my-12 border-neutral-200" />
+
+    <!-- ส่วนเนื้อหาของบทความ -->
+    <!-- ใช้ set:html เพื่อแสดงผล HTML ที่เราสร้างมาจากบล็อกของ Notion -->
+    <section class="prose max-w-3xl mx-auto px-2" set:html={contentHtml} />
+
+    <hr class="my-12 border-neutral-200" />
+
+    <div class="mt-4 flex flex-row items-center justify-start flex-wrap gap-2 mb-16">
+      <span>Tags:</span>
+      {
+        tags &&
+          tags.map((tag: string) => (
+            <a href={`/blog/tag/${tag}`} class="inline-block rounded-full bg-gray-200 px-2 py-1 text-xs text-gray-700">
+              {tag}
+            </a>
+          ))
+      }
+    </div>
+  </article>
+</Layout>
