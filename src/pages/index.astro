@@ -8,10 +8,10 @@ const posts = await getAllPosts();
 ---
 
 <Layout title={siteConfig.site_title} description={siteConfig.site_description}>
-  <section id="hero" class="overflow-hidden relative mb-16">
-    <section id="docs" class="py-8">
+  <section id="content" class="overflow-hidden relative mb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex flex-col items-center justify-center gap-2 mt-10 mb-4">
-        <div class="flex flex-row items-center justify-center gap-2">
+        <div class="flex flex-row items-center justify-center gap-3">
           <span
             class="w-10 h-10 bg-primary text-white rounded-full items-center justify-center text-xl inline-flex"
             >✱</span
@@ -19,157 +19,103 @@ const posts = await getAllPosts();
         </div>
       </div>
       <p class="text-center">{siteConfig.site_description}</p>
-      <hr class="my-12 border-neutral-200" />
-
-      <!-- Hero Layout with Featured Post and Sidebar -->
-      <div class="grid md:grid-cols-3 gap-8 mb-16">
-        <!-- Featured Post Section (Left - 2 columns) -->
-        <div class="md:col-span-2">
+      <hr class="my-12 border-slate-200" />
+      <!-- Hero Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-8 mb-12">
+        <!-- Main Featured Post -->
+        <div class="lg:col-span-2 mb-8 lg:mb-0">
           {posts.slice(0, 1).map((post) => (
-            <a
-              href={`/blog/${post.slug}`}
-              class="group block relative overflow-hidden rounded-lg"
-            >
-              {post.cover ? (
-                <figure class="shrink-0 w-full relative overflow-hidden rounded-lg overflow-hidden h-96">
+            <a href={`/blog/${post.slug}`} class="group block overflow-hidden rounded-xl">
+              <div class="relative">
+                {post.cover && (
                   <Image
                     src={post.cover}
                     alt={post.title}
-                    width={1200}
-                    height={600}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ease-in-out group-hover:brightness-75"
+                    width={800}
+                    height={450}
+                    class="w-full h-auto object-cover aspect-video rounded-xl group-hover:scale-105 transition-transform duration-300"
                   />
-                </figure>
-              ) : null}
-              <!-- Overlay Content -->
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent rounded-lg flex flex-col justify-end p-6">
-                <time class="text-xs text-gray-300 mb-2">
-                  {new Date(post.created).toLocaleString("th-TH", {
-                    dateStyle: "long",
-                  })}
-                </time>
-                <h2 class="text-2xl md:text-3xl font-bold text-white mb-3">
-                  {post.title}
-                </h2>
-                <p class="text-gray-200 line-clamp-2 mb-3">
-                  {post.description}
-                </p>
-                <div class="flex flex-wrap gap-2">
-                  {post.tags &&
-                    post.tags.slice(0, 3).map((tag: string) => (
-                      <span class="inline-block rounded-full bg-primary/80 text-white px-3 py-1 text-xs font-medium">
-                        {tag}
-                      </span>
-                    ))}
+                )}
+                <div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/70 to-transparent rounded-b-xl"></div>
+                <div class="absolute bottom-0 left-0 p-6 text-white">
+                  {post.tags && post.tags[0] && (
+                    <span class="inline-block bg-primary text-white px-3 py-1 text-xs font-bold uppercase rounded mb-2">{post.tags[0]}</span>
+                  )}
+                  <h2 class="text-2xl lg:text-3xl font-bold leading-tight group-hover:underline decoration-primary">{post.title}</h2>
+                  <p class="mt-2 text-sm text-slate-200 line-clamp-2 hidden sm:block">{post.description}</p>
                 </div>
               </div>
             </a>
           ))}
         </div>
 
-        <!-- Sidebar Highlights (Right - 1 column) -->
-        <div class="space-y-4">
-          <h3 class="text-xl font-bold mb-4">ไฮไลต์</h3>
-          {posts.slice(1, 5).map((post) => (
-            <a
-              href={`/blog/${post.slug}`}
-              class="group flex gap-3 p-3 rounded-lg border border-neutral-200 hover:shadow-md transition-shadow hover:bg-neutral-50"
-            >
-              {post.cover ? (
-                <figure class="shrink-0 w-20 h-20 relative overflow-hidden rounded">
-                  <Image
-                    src={post.cover}
-                    alt={post.title}
-                    width={150}
-                    height={150}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
-                  />
-                </figure>
-              ) : null}
-              <div class="flex-1 min-w-0">
-                <p class="text-xs text-gray-500 mb-1">
-                  {new Date(post.created).toLocaleString("th-TH", {
-                    dateStyle: "short",
-                  })}
-                </p>
-                <h4 class="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-primary transition-colors">
-                  {post.title}
-                </h4>
-                <div class="flex gap-1 mt-1 flex-wrap">
-                  {post.tags &&
-                    post.tags.slice(0, 2).map((tag: string) => (
-                      <span class="text-xs text-gray-600 bg-gray-100 rounded px-2 py-0.5">
-                        {tag}
-                      </span>
-                    ))}
-                </div>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <hr class="my-12 border-neutral-200" />
-
-      <!-- Latest Posts Section (Simple Grid) -->
-      <div class="mb-16">
-        <div class="flex flex-row items-center justify-start gap-2 mb-8">
-          <span
-            class="w-10 h-10 bg-primary text-white rounded-full items-center justify-center text-xl inline-flex"
-            >⭐</span
-          ><h2 class="text-2xl font-bold">โพสต์ล่าสุด</h2>
-        </div>
-        <div class="article grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {
-            posts.slice(0, 6).map((post) => (
-              <a
-                href={`/blog/${post.slug}`}
-                class="group flex flex-col gap-4 p-0 justify-start items-center rounded-lg overflow-hidden border border-neutral-200 hover:shadow-lg transition-shadow"
-              >
-                {post.cover ? (
-                  <figure class="shrink-0 w-full relative overflow-hidden">
+        <!-- Side Posts -->
+        <div class="space-y-6">
+          {posts.slice(1, 3).map((post) => (
+            <a href={`/blog/${post.slug}`} class="group block">
+              <div class="grid grid-cols-3 gap-4">
+                {post.cover && (
+                  <div class="col-span-1">
                     <Image
                       src={post.cover}
                       alt={post.title}
-                      width={800}
-                      height={400}
-                      class="aspect-video object-cover group-hover:scale-105 transition-all duration-700 ease-in-out group-hover:brightness-90"
+                      width={150}
+                      height={100}
+                      class="w-full h-full object-cover rounded-lg group-hover:opacity-80 transition-opacity"
                     />
-                  </figure>
-                ) : null}
-                <div class="relative overflow-hidden px-4">
-                  <time class="text-xs text-gray-500">
-                    {new Date(post.created).toLocaleString("th-TH", {
-                      dateStyle: "long",
-                    })}
-                  </time>
-                  <h3 class="text-lg font-semibold text-primary md:text-xl leading-tight mt-2">
-                    {post.title}
-                  </h3>
-                  <p class="mt-2 text-gray-600 line-clamp-3">
-                    {post.description}
-                  </p>
-                  <div class="my-4 flex flex-row items-center justify-start flex-wrap gap-2">
-                    {post.tags &&
-                      post.tags.map((tag: string) => (
-                        <span
-                          class="inline-block rounded-full bg-gray-200 px-2 py-1 text-xs text-gray-700"
-                        >
-                          {tag}
-                        </span>
-                      ))}
                   </div>
+                )}
+                <div class="col-span-2">
+                  {post.tags && post.tags[0] && (
+                    <span class="text-xs font-semibold text-primary uppercase">{post.tags[0]}</span>
+                  )}
+                  <h3 class="text-md font-bold leading-snug text-slate-800 group-hover:underline decoration-primary">{post.title}</h3>
                 </div>
-              </a>
-            ))
-          }
-        </div>
-        <div class="text-center mt-8">
-          <a href="/blog" class="inline-block bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-primary/90 transition-colors">
-            บทความทั้งหมด
-          </a>
+              </div>
+            </a>
+          ))}
         </div>
       </div>
-    </section>
+
+      <!-- Secondary Posts Grid -->
+      <div class="mb-16">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-3 h-3 bg-primary rounded-full"></span>
+          <h2 class="text-xl font-bold text-slate-800">เรื่องที่คุณอาจสนใจ</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
+          {posts.slice(3, 9).map((post) => (
+            <a href={`/blog/${post.slug}`} class="group block">
+              <div class="overflow-hidden rounded-xl mb-4">
+                {post.cover && (
+                  <Image
+                    src={post.cover}
+                    alt={post.title}
+                    width={400}
+                    height={225}
+                    class="w-full aspect-video object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                )}
+              </div>
+              <div class="px-1">
+                <div class="flex items-center gap-3 text-xs text-slate-500 mb-2">
+                  {post.tags && post.tags[0] && <span class="font-bold text-primary uppercase">{post.tags[0]}</span>}
+                  <span>•</span>
+                  <time>{new Date(post.created).toLocaleString("th-TH", { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+                </div>
+                <h3 class="text-lg font-bold leading-snug text-slate-800 group-hover:underline">{post.title}</h3>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- All Posts Button -->
+      <div class="text-center mt-8">
+        <a href="/blog" class="inline-block bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+          บทความทั้งหมด
+        </a>
+      </div>
+    </div>
   </section></Layout
 >

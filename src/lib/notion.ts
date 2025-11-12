@@ -93,3 +93,47 @@ export async function getAllPosts(): Promise<BlogPostSummary[]> {
     return [];
   }
 }
+
+/**
+ * ดึงข้อมูล Post ตาม Tag ที่ระบุ
+ * @param {string} tag - Tag ที่ต้องการค้นหา
+ * @returns {Promise<BlogPostSummary[]>} รายการ Post ที่มี Tag ตรงกัน
+ */
+export async function getPostsByTag(tag: string): Promise<BlogPostSummary[]> {
+  try {
+    const dataSourceId = await getDataSourceId();
+
+    const res = await (notion as any).dataSources.query({
+      data_source_id: dataSourceId,
+      filter: {
+        and: [
+          {
+            property: "Published",
+            checkbox: { equals: true },
+          },
+          {
+            property: "Tags",
+            multi_select: { contains: tag },
+          },
+        ],
+      },
+      sorts: [{ property: "Created", direction: "descending" }],
+    });
+
+    return res.results.map((page: any) => {
+      const props = page.properties;
+      return {
+        id: page.id,
+        title: props.Name?.title?.[0]?.plain_text ?? "Untitled",
+        slug: props.Slug?.rich_text?.[0]?.plain_text ?? "",
+        description: props.Description?.rich_text?.[0]?.plain_text ?? "",
+        tags: props.Tags?.multi_select?.map((t: any) => t.name) ?? [],
+        created: props.Created?.created_time ?? page.created_time,
+        cover: props.Cover?.files?.[0]?.external?.url ?? props.Cover?.files?.[0]?.file?.url ?? page.cover?.external?.url ?? page.cover?.file?.url ?? "",
+      };
+    });
+  } catch (error) {
+    console.error(`Error fetching posts by tag "${tag}" from Notion:`, error);
+    return [];
+  }
+}

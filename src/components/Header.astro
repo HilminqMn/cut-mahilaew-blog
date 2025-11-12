@@ -1,80 +1,81 @@
 ---
-import { Image } from "astro:assets";
-import siteLogo from "../images/site-logo.png";
+import { siteConfig } from "../config/site";
 
 const menuItems = [
-  {
-    title: "บล็อก",
-    href: "/blog",
-  },
+  { name: "Home", href: "/" },
+  { name: "Reviews", href: "/blog" }, // ลิงก์ไปยังหน้า "บทความทั้งหมด" ที่มีอยู่
+  { name: "Top Lists", href: "/top-lists" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
 ];
 
-const menuButton = {
-  title: "Source Code",
-  href: "https://github.com/Duckrr/astro-notion",
-};
+const { pathname } = Astro.url;
 ---
 
-<header class="bg-white sticky top-0 z-50">
-  <nav
-    class="header-nav max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6"
-  >
-    <a
-      href="/"
-      id="site-logo"
-      class="logo-link w-24 transition-all ease-in-out"
-    >
-      <Image
-        src={siteLogo}
-        alt="Site Logo"
-        class="site-logo w-full"
-        format="avif"
-        quality={"mid"}
-        loading={"eager"}
-        decoding={"async"}
-        fetchpriority={"high"}
-      />
-    </a>
-    
-    <!-- Menu Items -->
-    <div class="hidden md:flex items-center gap-8">
-      {menuItems.map((item) => (
-        <a
-          href={item.href}
-          class="text-gray-700 hover:text-primary transition-colors font-medium"
+<header class="bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-slate-200/80">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Site Logo -->
+      <div class="flex-shrink-0">
+        <a href="/" class="flex items-center gap-2 text-xl font-bold text-slate-800 hover:text-primary transition-colors">
+          <span class="w-8 h-8 bg-primary text-white rounded-full items-center justify-center text-lg inline-flex">✱</span>
+          <span>{siteConfig.site_title}</span>
+        </a>
+      </div>
+
+      <!-- Desktop Menu -->
+      <nav class="hidden md:flex md:items-center md:space-x-8">
+        {menuItems.map(item => (
+          <a 
+            href={item.href} 
+            class:list={[
+              "font-medium text-slate-600 hover:text-primary transition-colors",
+              { "text-primary": pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)) }
+            ]}
+          >
+            {item.name}
+          </a>
+        ))}
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
+          <span class="sr-only">Open main menu</span>
+          <!-- Hamburger Icon -->
+          <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu, show/hide based on menu state. -->
+  <div id="mobile-menu" class="md:hidden hidden border-t border-slate-200">
+    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+      {menuItems.map(item => (
+        <a 
+          href={item.href} 
+          class:list={[
+            "block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50",
+            { "bg-primary/10 text-primary": pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)) }
+          ]}
         >
-          {item.title}
+          {item.name}
         </a>
       ))}
     </div>
-  </nav>
+  </div>
 </header>
 
-<script is:inline>
-  document.addEventListener("DOMContentLoaded", () => {
-    const logoWrap = document.getElementById("site-logo");
-    if (!logoWrap) return;
+<script>
+  const menuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
 
-    const large = "w-24";
-    const small = "w-16";
-
-    const updateWidthClass = () => {
-      if (window.scrollY > 0) {
-        if (logoWrap.classList.contains(large)) {
-          logoWrap.classList.replace(large, small);
-        } else {
-          logoWrap.classList.add(small);
-        }
-      } else {
-        if (logoWrap.classList.contains(small)) {
-          logoWrap.classList.replace(small, large);
-        } else {
-          logoWrap.classList.add(large);
-        }
-      }
-    };
-
-    updateWidthClass();
-    window.addEventListener("scroll", updateWidthClass, { passive: true });
+  menuButton?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+    const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+    menuButton.setAttribute('aria-expanded', !isExpanded + '');
   });
 </script>
