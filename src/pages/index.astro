@@ -121,7 +121,7 @@ const posts = await getAllPosts();
         </div>
         <div class="article grid md:grid-cols-3 gap-6">
           {
-            posts.slice(0, 6).map((post) => (
+            posts.slice(5, 11).map((post) => (
               <a
                 href={`/blog/${post.slug}`}
                 class="group flex flex-col gap-4 p-0 justify-start items-center rounded-lg overflow-hidden border border-neutral-200 hover:shadow-lg transition-shadow"
@@ -163,6 +163,11 @@ const posts = await getAllPosts();
               </a>
             ))
           }
+        </div>
+        <div class="text-center mt-12">
+          <a href="/blog" class="inline-block bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary/90 transition-colors text-lg">
+            บทความทั้งหมด
+          </a>
         </div>
       </div>
     </section>
