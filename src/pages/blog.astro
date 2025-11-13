@@ -5,6 +5,8 @@ import { siteConfig } from "../config/site";
 import { getAllPosts } from "../lib/notion";
 
 const posts = await getAllPosts();
+const allTags = posts.flatMap(post => post.tags).filter(Boolean);
+const uniqueTags = [...new Set(allTags)];
 ---
 
 <Layout title={`บทความทั้งหมด - ${siteConfig.site_title}`} description="รวมบทความทั้งหมดจาก CutMahilaew Blog">
@@ -20,6 +22,26 @@ const posts = await getAllPosts();
           ><h1>บทความทั้งหมด</h1>
         </div>
         <p class="text-center text-slate-600">รวมทุกเรื่องราว สาระ และบทความที่น่าสนใจจากเรา</p>
+      </div>
+
+      <!-- Tag Filter Bar -->
+      <div class="mb-8 flex flex-wrap gap-2 justify-center">
+        <a
+          href="/blog"
+          class="px-4 py-2 rounded-full bg-primary text-white hover:bg-primary/80 transition-colors font-medium"
+        >
+          ทั้งหมด
+        </a>
+        {
+          uniqueTags.map((tag) => (
+            <a
+              href={`/blog/tag/${tag}`}
+              class="px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-primary hover:text-white transition-colors font-medium"
+            >
+              {tag}
+            </a>
+          ))
+        }
       </div>
 
       <!-- All Posts Grid -->

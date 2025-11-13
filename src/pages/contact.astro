@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { siteConfig } from '../config/site';
+---
+
+<Layout title={`Contact - ${siteConfig.site_title}`}>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <h1 class="text-4xl font-bold mb-8 text-center">ติดต่อเรา</h1>
+    <div class="text-center">
+        <p class="text-lg text-slate-700 leading-relaxed">
+            หากมีข้อสงสัยหรือต้องการติดต่อ สามารถส่งอีเมลมาได้ที่:
+        </p>
+        <a href="mailto:[email protected]" class="text-lg text-primary hover:underline">[email protected]</a>
+    </div>
+  </div>
+</Layout>

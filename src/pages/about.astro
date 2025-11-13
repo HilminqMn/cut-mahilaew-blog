@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { siteConfig } from '../config/site';
+import { Image } from 'astro:assets';
+import ProfileImage from '../images/Profile-by-me.jpg';
+---
+
+<Layout title={`About - ${siteConfig.site_title}`}>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <h1 class="text-4xl font-bold mb-8 text-center">เกี่ยวกับเรา</h1>
+    <div class="flex flex-col items-center text-center">
+        <Image src={ProfileImage} alt="รูปโปรไฟล์" class="w-48 h-48 rounded-full object-cover mb-4" />
+        <p class="text-lg text-slate-700 leading-relaxed">
+            สวัสดีครับ ผมชื่อ [ชื่อของคุณ] ยินดีต้อนรับสู่บล็อกของผมครับ
+        </p>
+        <p class="text-lg text-slate-700 leading-relaxed mt-4">
+            ผมมีความหลงใหลใน [สิ่งที่คุณหลงใหล] และบล็อกนี้คือพื้นที่ที่ผมจะแบ่งปันความคิด ประสบการณ์ และความรู้ในเรื่องต่างๆ ที่ผมสนใจ
+        </p>
+        <p class="text-lg text-slate-700 leading-relaxed mt-4">
+            หวังว่าเนื้อหาในบล็อกนี้จะเป็นประโยชน์และสร้างแรงบันดาลใจให้กับทุกคนนะครับ
+        </p>
+    </div>
+  </div>
+</Layout>
